@@ -2,8 +2,6 @@ module brb-service-platform-backend
 
 go 1.23
 
-toolchain go1.23.7
-
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
