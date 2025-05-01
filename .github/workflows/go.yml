@@ -16,10 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: List files for debugging
+        run: ls -la  # To verify where go.mod is located
+
       - name: Set up Go environment
         uses: actions/setup-go@v3
         with:
-          go-version: '1.18'  # specify your Go version here
+          go-version: '1.18'
 
       - name: Cache Go modules
         uses: actions/cache@v3
@@ -31,7 +34,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pwd
           go mod tidy
           go mod vendor
 
