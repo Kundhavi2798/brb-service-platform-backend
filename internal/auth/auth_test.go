@@ -11,24 +11,46 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupTestDB(t *testing.T) {
-	testDB, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	assert.NoError(t, err)
-	db.DB = testDB
+var testDB *gorm.DB
 
-	err = db.DB.AutoMigrate(&User{})
-	assert.NoError(t, err)
+// TestMain to setup the database before running tests
+func TestMain(m *testing.M) {
+	// Setup the database once before all tests
+	setupTestDB()
+
+	// Run the tests
+	m.Run()
 }
 
-func TestCreateUser(t *testing.T) {
-	setupTestDB(t)
+// Setup the in-memory test database
+func setupTestDB() {
+	var err error
+	// Create an in-memory SQLite DB
+	testDB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect to the test database")
+	}
 
+	// Assign it to db.DB for global use in the application
+	db.DB = testDB
+
+	// Migrate the schema
+	err = db.DB.AutoMigrate(&User{})
+	if err != nil {
+		panic("failed to migrate the database")
+	}
+}
+
+// Test function to create a user
+func TestCreateUser(t *testing.T) {
+	// No need to call setupTestDB here; it's already done in TestMain
 	user := &User{
 		Name:     "Alice",
 		Email:    "alice@example.com",
 		Password: "hashed-password",
 	}
 
+	// Assume CreateUser uses db.DB and saves the user
 	err := CreateUser(user)
 	assert.NoError(t, err)
 
@@ -38,9 +60,9 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, "alice@example.com", found.Email)
 }
 
+// Test function to get a user by email
 func TestGetUserByEmail(t *testing.T) {
-	setupTestDB(t)
-
+	// No need to call setupTestDB here
 	user := &User{
 		Name:     "Bob",
 		Email:    "bob@example.com",
@@ -58,6 +80,7 @@ func TestGetUserByEmail(t *testing.T) {
 	assert.Error(t, err)
 }
 
+// Test password hashing and checking
 func TestHashPasswordAndCheck(t *testing.T) {
 	password := "mysecurepassword"
 
@@ -73,6 +96,7 @@ func TestHashPasswordAndCheck(t *testing.T) {
 	assert.False(t, wrong)
 }
 
+// Test JWT generation
 func TestGenerateJWT(t *testing.T) {
 	tokenStr, err := GenerateJWT(1, "admin")
 	assert.NoError(t, err)
