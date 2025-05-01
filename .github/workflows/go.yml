@@ -19,10 +19,10 @@ jobs:
       - name: Set up Go environment
         uses: actions/setup-go@v3
         with:
-          go-version: '1.18' # specify your Go version here
+          go-version: '1.18'  # specify your Go version here
 
       - name: Cache Go modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/go-build
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -36,8 +36,8 @@ jobs:
 
       - name: Run tests
         run: |
-          go test ./... # Run all tests
+          go test ./...
 
       - name: Build
         run: |
-          go build -v # Compile the Go project (if necessary)
+          go build -v
