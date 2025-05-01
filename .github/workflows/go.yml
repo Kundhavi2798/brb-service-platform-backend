@@ -32,7 +32,6 @@ jobs:
       - name: Install dependencies
         run: |
           pwd
-          cd brb-service-platform-backend
           go mod tidy
           go mod vendor
 
