@@ -1,8 +1,11 @@
 package notification
 
 import (
+	"github.com/gin-gonic/gin"
 	"log"
 	"math"
+	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -27,4 +30,20 @@ func ProcessNotification(n *Notification) {
 	}
 
 	UpdateNotification(n)
+}
+func PendingNotificationsHandler(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "10")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+
+	notifications, err := GetPendingNotifications(limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notifications"})
+		return
+	}
+
+	c.JSON(http.StatusOK, notifications)
 }

@@ -4,4 +4,5 @@ import "github.com/gin-gonic/gin"
 
 func RegisterNotificationRoutes(r *gin.Engine) {
 	r.POST("/notify", SendNotificationHandler)
+	r.GET("/getPending", PendingNotificationsHandler)
 }
